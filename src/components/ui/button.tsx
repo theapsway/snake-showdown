@@ -15,12 +15,18 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        arcade: "bg-primary text-primary-foreground font-pixel text-xs hover:shadow-[0_0_20px_hsl(var(--primary))] border-2 border-primary",
+        arcadeOutline: "border-2 border-primary text-primary font-pixel text-xs hover:bg-primary/10 hover:shadow-[0_0_15px_hsl(var(--primary)/0.3)]",
+        arcadeDestructive: "bg-accent text-accent-foreground font-pixel text-xs hover:shadow-[0_0_20px_hsl(var(--accent))] border-2 border-accent",
+        arcadeGhost: "text-primary font-pixel text-xs hover:bg-primary/10 hover:shadow-[0_0_10px_hsl(var(--primary)/0.2)]",
       },
       size: {
         default: "h-10 px-4 py-2",
         sm: "h-9 rounded-md px-3",
         lg: "h-11 rounded-md px-8",
         icon: "h-10 w-10",
+        arcade: "h-12 px-6 py-3",
+        arcadeLg: "h-14 px-8 py-4",
       },
     },
     defaultVariants: {
