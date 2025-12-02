@@ -1,0 +1,346 @@
+openapi: 3.0.0
+info:
+  title: Snake Showdown API
+  version: 1.0.0
+  description: API for Snake Showdown game
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+          format: email
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - username
+        - email
+        - createdAt
+
+    GameMode:
+      type: string
+      enum: [pass-through, walls]
+
+    Direction:
+      type: string
+      enum: [UP, DOWN, LEFT, RIGHT]
+
+    Position:
+      type: object
+      properties:
+        x:
+          type: integer
+        y:
+          type: integer
+      required:
+        - x
+        - y
+
+    SnakeSegment:
+      allOf:
+        - $ref: '#/components/schemas/Position'
+        - type: object
+          properties:
+            dotSide:
+              type: string
+              enum: [left, right]
+          required:
+            - dotSide
+
+    GameState:
+      type: object
+      properties:
+        snake:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnakeSegment'
+        food:
+          $ref: '#/components/schemas/Position'
+        direction:
+          $ref: '#/components/schemas/Direction'
+        score:
+          type: integer
+        isGameOver:
+          type: boolean
+        isPaused:
+          type: boolean
+        gameMode:
+          $ref: '#/components/schemas/GameMode'
+        speed:
+          type: integer
+      required:
+        - snake
+        - food
+        - direction
+        - score
+        - isGameOver
+        - isPaused
+        - gameMode
+        - speed
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        rank:
+          type: integer
+        username:
+          type: string
+        score:
+          type: integer
+        gameMode:
+          $ref: '#/components/schemas/GameMode'
+        date:
+          type: string
+          format: date
+      required:
+        - id
+        - rank
+        - username
+        - score
+        - gameMode
+        - date
+
+    ActivePlayer:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        gameState:
+          $ref: '#/components/schemas/GameState'
+        startedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - username
+        - gameState
+        - startedAt
+
+    AuthResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/User'
+        error:
+          type: string
+      required:
+        - success
+
+    LeaderboardResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+        error:
+          type: string
+      required:
+        - success
+        - entries
+
+    ActivePlayersResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        players:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivePlayer'
+        error:
+          type: string
+      required:
+        - success
+        - players
+
+    SubmitScoreResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        entry:
+          $ref: '#/components/schemas/LeaderboardEntry'
+        error:
+          type: string
+      required:
+        - success
+
+paths:
+  /auth/login:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/signup:
+    post:
+      summary: Register new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - username
+                - email
+                - password
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/logout:
+    post:
+      summary: Logout user
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                required:
+                  - success
+
+  /auth/me:
+    get:
+      summary: Get current user
+      responses:
+        '200':
+          description: Current user details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /leaderboard:
+    get:
+      summary: Get leaderboard entries
+      parameters:
+        - in: query
+          name: mode
+          schema:
+            $ref: '#/components/schemas/GameMode'
+          required: false
+      responses:
+        '200':
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaderboardResponse'
+    post:
+      summary: Submit new score
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                score:
+                  type: integer
+                gameMode:
+                  $ref: '#/components/schemas/GameMode'
+              required:
+                - score
+                - gameMode
+      responses:
+        '200':
+          description: Score submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitScoreResponse'
+
+  /spectate/active:
+    get:
+      summary: Get active players
+      responses:
+        '200':
+          description: List of active players
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivePlayersResponse'
+
+  /spectate/{playerId}:
+    get:
+      summary: Get player game state
+      parameters:
+        - in: path
+          name: playerId
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Player game state
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  gameState:
+                    $ref: '#/components/schemas/GameState'
+                  error:
+                    type: string
+                required:
+                  - success
