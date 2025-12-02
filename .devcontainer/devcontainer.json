@@ -3,5 +3,10 @@
     "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
     "forwardPorts": [
         8080
-    ]
+    ],
+    "features": {
+        "ghcr.io/devcontainers/features/sshd:1": {
+            "version": "latest"
+        }
+    }
 }
