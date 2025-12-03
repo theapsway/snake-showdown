@@ -11,7 +11,7 @@ import {
 } from '@/types/game';
 
 // API Base URL
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://localhost:8000';
 
 // Helper function for API calls
 async function apiCall<T>(

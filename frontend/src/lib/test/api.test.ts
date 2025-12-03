@@ -48,13 +48,15 @@ describe('API Services', () => {
       });
 
       it('should signup successfully with new credentials', async () => {
-        // Use timestamp to ensure unique email since backend persists data
-        const uniqueEmail = `newplayer${Date.now()}@test.com`;
-        const result = await authApi.signup('NewPlayer', uniqueEmail, 'password123');
+        // Use timestamp to ensure unique email and username since backend persists data
+        const timestamp = Date.now();
+        const uniqueEmail = `newplayer${timestamp}@test.com`;
+        const uniqueUsername = `NewPlayer${timestamp}`;
+        const result = await authApi.signup(uniqueUsername, uniqueEmail, 'password123');
 
         expect(result.success).toBe(true);
         expect(result.user).toBeDefined();
-        expect(result.user?.username).toBe('NewPlayer');
+        expect(result.user?.username).toBe(uniqueUsername);
         expect(result.user?.email).toBe(uniqueEmail);
       });
     });
